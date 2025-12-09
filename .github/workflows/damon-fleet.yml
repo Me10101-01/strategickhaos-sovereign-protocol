@@ -10,10 +10,16 @@ on:
     - cron: '0 9 * * *'
   workflow_dispatch:
 
+# Limit permissions to only what's needed
+permissions:
+  contents: read
+
 jobs:
   damon-fleet:
     runs-on: ubuntu-latest
     name: Run DAMON Fleet Checks
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -48,6 +54,8 @@ jobs:
   damon-security:
     runs-on: ubuntu-latest
     name: Security Domain Check
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
