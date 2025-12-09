@@ -259,7 +259,9 @@ class DAMONAgent:
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                     all_content += f.read() + "\n"
-            except Exception:
+            except (IOError, OSError, PermissionError) as e:
+                # Skip files we can't read (permissions, etc.)
+                self.logger.debug(f"Could not read {file_path}: {e}")
                 pass
         
         # Check required keywords
@@ -352,7 +354,9 @@ class DAMONAgent:
                                 'file': str(file_path.relative_to(self.project_root)),
                                 'pattern': forbidden_pattern
                             })
-            except Exception:
+            except (IOError, OSError, PermissionError) as e:
+                # Skip files we can't read
+                self.logger.debug(f"Could not read {file_path}: {e}")
                 pass
         
         passed = len(violations) == 0

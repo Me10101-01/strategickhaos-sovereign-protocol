@@ -43,23 +43,7 @@ jobs:
           
       - name: Check for Critical Failures
         run: |
-          # Parse JSON and check for critical RED signals
-          CRITICAL_COUNT=$(python -c "
-          import json
-          with open('damon-results.json') as f:
-              results = json.load(f)
-              critical = sum(1 for r in results if r['overall_signal'] == 'red' and r.get('domain') in ['security_posture', 'ethical_compliance'])
-              print(critical)
-          ")
-          
-          echo "Critical RED signals: $CRITICAL_COUNT"
-          
-          if [ "$CRITICAL_COUNT" -gt 0 ]; then
-            echo "⚠️ WARNING: $CRITICAL_COUNT critical domain(s) showing RED"
-            echo "Review DAMON results in artifacts"
-            # Uncomment to fail the build on critical issues:
-            # exit 1
-          fi
+          python damon/check_critical.py damon-results.json
 
   damon-security:
     runs-on: ubuntu-latest

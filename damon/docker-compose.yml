@@ -1,5 +1,8 @@
 version: '3.8'
 
+# NOTE: This docker-compose.yml should be run from the damon/ directory
+# Usage: cd damon && docker-compose up
+
 services:
   # STRATEGY DAMON - Monitors for vision drift, no client offer, over-scope
   damon-strategy:

@@ -89,8 +89,7 @@ done
 echo ""
 echo "Test 7: YAML syntax validation"
 for config in damon/configs/*.yml; do
-    python -c "import yaml; yaml.safe_load(open('$config'))" 2>&1
-    if [ $? -eq 0 ]; then
+    if python -c "import yaml; yaml.safe_load(open('$config'))" 2>&1; then
         echo "✅ PASS: $(basename $config) is valid YAML"
     else
         echo "❌ FAIL: $(basename $config) has invalid YAML"
