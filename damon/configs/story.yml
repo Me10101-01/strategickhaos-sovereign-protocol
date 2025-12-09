@@ -1,0 +1,74 @@
+name: STORY
+description: Monitors for portfolio chaos and buzzword overload
+domain: narrative_coherence
+priority: medium
+
+risks:
+  - id: STORY-001
+    name: Portfolio Chaos
+    description: Work samples disorganized or unclear value demonstration
+    severity: medium
+    checks:
+      - type: file_exists
+        path: PORTFOLIO.md
+        message: "Missing PORTFOLIO.md - no portfolio structure"
+      - type: keyword_check
+        files: ["PORTFOLIO.md"]
+        required_keywords: ["project", "outcome", "impact", "technology"]
+        message: "Portfolio missing key demonstration elements"
+      - type: directory_exists
+        path: portfolio/projects
+        message: "Missing portfolio/projects directory"
+      - type: file_exists
+        path: portfolio/INDEX.md
+        message: "Missing portfolio index/navigation"
+    
+  - id: STORY-002
+    name: Buzzword Overload
+    description: Technical narrative obscured by jargon and hype
+    severity: medium
+    checks:
+      - type: keyword_check
+        files: ["README.md", "*.md"]
+        forbidden_keywords: 
+          - "revolutionary"
+          - "game-changing"
+          - "disruptive"
+          - "synergy"
+          - "paradigm shift"
+        max_matches: 3
+        message: "Excessive marketing buzzwords detected"
+      - type: keyword_check
+        files: ["README.md", "*.md"]
+        required_keywords: ["demonstrate", "proof", "result", "evidence"]
+        message: "Narrative needs more concrete evidence"
+    
+  - id: STORY-003
+    name: Missing LinkedIn Proof
+    description: Portfolio doesn't support LinkedIn credibility claims
+    severity: medium
+    checks:
+      - type: file_exists
+        path: linkedin/CERTIFICATIONS.md
+        message: "Missing certification tracking for LinkedIn"
+      - type: file_exists
+        path: linkedin/PROJECTS.md
+        message: "Missing project summaries for LinkedIn"
+      - type: keyword_check
+        files: ["linkedin/*.md"]
+        required_keywords: ["verified", "certified", "completed", "achieved"]
+        message: "LinkedIn materials missing credibility markers"
+
+signals:
+  green:
+    - "Portfolio well-organized and navigable"
+    - "Technical narrative clear and evidence-based"
+    - "LinkedIn materials support credibility claims"
+  yellow:
+    - "Portfolio needs better organization"
+    - "Some buzzword cleanup needed"
+    - "LinkedIn materials need strengthening"
+  red:
+    - "Portfolio chaotic or missing"
+    - "Excessive hype obscures technical content"
+    - "No LinkedIn credibility proof"

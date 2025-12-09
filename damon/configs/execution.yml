@@ -1,0 +1,68 @@
+name: EXECUTION
+description: Monitors for burnout, context switching, and stalled certifications
+domain: operational_health
+priority: high
+
+risks:
+  - id: EXEC-001
+    name: Burnout Risk
+    description: Workload exceeding sustainable capacity
+    severity: critical
+    checks:
+      - type: commit_frequency
+        max_per_day: 50
+        message: "Commit frequency dangerously high - burnout risk"
+      - type: file_exists
+        path: WORKLOAD.md
+        message: "Missing WORKLOAD.md - no capacity tracking"
+      - type: keyword_check
+        files: ["WORKLOAD.md"]
+        required_keywords: ["capacity", "sustainable", "pace"]
+        message: "Workload planning missing sustainability focus"
+    
+  - id: EXEC-002
+    name: Context Switching
+    description: Too many simultaneous work streams
+    severity: high
+    checks:
+      - type: branch_count
+        max_branches: 5
+        message: "Too many active branches - excessive context switching"
+      - type: file_exists
+        path: WIP.md
+        message: "Missing WIP.md - no work-in-progress tracking"
+      - type: directory_count
+        pattern: "*/in-progress/*"
+        max_count: 3
+        message: "Too many parallel work streams"
+    
+  - id: EXEC-003
+    name: Stalled Certifications
+    description: GCP certification progress blocked or delayed
+    severity: medium
+    checks:
+      - type: file_exists
+        path: CERTIFICATIONS.md
+        message: "Missing CERTIFICATIONS.md - no certification tracking"
+      - type: file_age
+        path: CERTIFICATIONS.md
+        max_days: 7
+        message: "Certification tracking not updated in over a week"
+      - type: keyword_check
+        files: ["CERTIFICATIONS.md"]
+        required_keywords: ["progress", "status", "next-step"]
+        message: "Certification tracking missing progress indicators"
+
+signals:
+  green:
+    - "Sustainable commit pace maintained"
+    - "Work-in-progress limited to 1-3 items"
+    - "Certifications progressing on schedule"
+  yellow:
+    - "Commit frequency trending high"
+    - "Multiple parallel work streams"
+    - "Certification updates overdue"
+  red:
+    - "Burnout-level commit frequency"
+    - "Excessive context switching detected"
+    - "Certifications stalled for weeks"

@@ -1,0 +1,74 @@
+name: DATA
+description: Monitors for bad metrics, missing logs, and benchmark fraud
+domain: data_integrity
+priority: high
+
+risks:
+  - id: DATA-001
+    name: Bad Metrics
+    description: Measuring wrong things or metrics without actionability
+    severity: medium
+    checks:
+      - type: file_exists
+        path: METRICS.md
+        message: "Missing METRICS.md - no metrics strategy documented"
+      - type: keyword_check
+        files: ["METRICS.md"]
+        required_keywords: ["kpi", "actionable", "baseline", "target"]
+        message: "Metrics documentation missing success criteria"
+      - type: file_exists
+        path: metrics/dashboard.yml
+        message: "Missing metrics dashboard configuration"
+    
+  - id: DATA-002
+    name: No Logs
+    description: Insufficient logging for debugging and audit
+    severity: high
+    checks:
+      - type: file_exists
+        path: LOGGING_STRATEGY.md
+        message: "Missing LOGGING_STRATEGY.md - no logging approach"
+      - type: keyword_check
+        files: ["**/*.py"]
+        required_keywords: ["logging", "logger"]
+        min_matches: 1
+        message: "Python code missing logging implementation"
+      - type: directory_exists
+        path: logs
+        message: "Missing logs directory"
+      - type: file_exists
+        path: logging.conf
+        message: "Missing logging configuration file"
+    
+  - id: DATA-003
+    name: Benchmark Fraud
+    description: Misleading or manipulated performance benchmarks
+    severity: critical
+    checks:
+      - type: file_exists
+        path: BENCHMARK_METHODOLOGY.md
+        message: "Missing BENCHMARK_METHODOLOGY.md - no validation process"
+      - type: keyword_check
+        files: ["BENCHMARK_METHODOLOGY.md"]
+        required_keywords: ["reproducible", "methodology", "validation", "independent"]
+        message: "Benchmark methodology lacks rigor"
+      - type: file_exists
+        path: benchmarks/validation.py
+        message: "Missing benchmark validation script"
+      - type: file_exists
+        path: benchmarks/raw_data/README.md
+        message: "Missing raw benchmark data documentation"
+
+signals:
+  green:
+    - "Actionable metrics defined and tracked"
+    - "Comprehensive logging in place"
+    - "Benchmarks validated and reproducible"
+  yellow:
+    - "Metrics need refinement"
+    - "Logging coverage incomplete"
+    - "Benchmark methodology needs strengthening"
+  red:
+    - "No meaningful metrics defined"
+    - "Critical logging gaps"
+    - "Benchmark results not reproducible or validated"

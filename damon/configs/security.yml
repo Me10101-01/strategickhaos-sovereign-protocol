@@ -1,0 +1,77 @@
+name: SECURITY
+description: Monitors for weak methodology and missing repeatable security harness
+domain: security_posture
+priority: critical
+
+risks:
+  - id: SEC-001
+    name: Weak Methodology
+    description: Insufficient security testing methodology
+    severity: critical
+    checks:
+      - type: file_exists
+        path: SECURITY_METHODOLOGY.md
+        message: "Missing SECURITY_METHODOLOGY.md - no documented approach"
+      - type: keyword_check
+        files: ["SECURITY_METHODOLOGY.md"]
+        required_keywords: ["threat-model", "testing", "validation", "methodology"]
+        message: "Security methodology incomplete or missing key components"
+      - type: file_exists
+        path: THREAT_MODEL.md
+        message: "Missing THREAT_MODEL.md - no threat modeling documented"
+    
+  - id: SEC-002
+    name: No Repeatable Harness
+    description: Security testing not automated or reproducible
+    severity: critical
+    checks:
+      - type: file_exists
+        path: security/harness.py
+        message: "Missing security harness implementation"
+      - type: file_exists
+        path: security/test_cases.yml
+        message: "Missing security test case definitions"
+      - type: directory_exists
+        path: security/red-team
+        message: "Missing red-team testing directory"
+      - type: directory_exists
+        path: security/blue-team
+        message: "Missing blue-team testing directory"
+      - type: directory_exists
+        path: security/purple-team
+        message: "Missing purple-team testing directory"
+    
+  - id: SEC-003
+    name: Multi-Language Security Gap
+    description: Security testing not covering all language implementations
+    severity: high
+    checks:
+      - type: directory_exists
+        path: implementations/python
+        message: "Missing Python implementation directory"
+      - type: directory_exists
+        path: implementations/rust
+        message: "Missing Rust implementation directory"
+      - type: directory_exists
+        path: implementations/cpp
+        message: "Missing C++ implementation directory"
+      - type: directory_exists
+        path: implementations/flamelang
+        message: "Missing FlameLang implementation directory"
+      - type: file_exists
+        path: MULTI_LANG_SECURITY.md
+        message: "Missing multi-language security comparison documentation"
+
+signals:
+  green:
+    - "Comprehensive security methodology documented"
+    - "Automated security harness operational"
+    - "All language implementations have security coverage"
+  yellow:
+    - "Security methodology needs refinement"
+    - "Partial security automation in place"
+    - "Some language implementations missing security tests"
+  red:
+    - "No documented security methodology"
+    - "No automated security testing"
+    - "Security testing missing for multiple languages"

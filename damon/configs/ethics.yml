@@ -1,0 +1,67 @@
+name: ETHICS
+description: Monitors for ToS violations, overclaims, and scope creep
+domain: ethical_compliance
+priority: critical
+
+risks:
+  - id: ETHICS-001
+    name: ToS Violations
+    description: Violations of platform terms of service
+    severity: critical
+    checks:
+      - type: file_exists
+        path: COMPLIANCE.md
+        message: "Missing COMPLIANCE.md - no ToS tracking"
+      - type: keyword_check
+        files: ["COMPLIANCE.md"]
+        required_keywords: ["github", "gcp", "terms", "compliance"]
+        message: "Compliance documentation incomplete"
+      - type: file_exists
+        path: compliance/platform-tos-review.md
+        message: "Missing platform ToS review documentation"
+    
+  - id: ETHICS-002
+    name: Overclaims
+    description: Claiming capabilities or results not actually delivered
+    severity: critical
+    checks:
+      - type: file_exists
+        path: CLAIMS_VALIDATION.md
+        message: "Missing CLAIMS_VALIDATION.md - no proof for claims"
+      - type: keyword_check
+        files: ["README.md"]
+        forbidden_keywords: ["guaranteed", "always", "never fails", "100%"]
+        message: "README contains absolute claims without proof"
+      - type: directory_exists
+        path: evidence
+        message: "Missing evidence directory for claims validation"
+    
+  - id: ETHICS-003
+    name: Ethical Scope Creep
+    description: Project expanding into ethically questionable areas
+    severity: high
+    checks:
+      - type: file_exists
+        path: ETHICAL_BOUNDARIES.md
+        message: "Missing ETHICAL_BOUNDARIES.md - no ethics guidelines"
+      - type: keyword_check
+        files: ["ETHICAL_BOUNDARIES.md"]
+        required_keywords: ["prohibited", "permitted", "review", "oversight"]
+        message: "Ethical boundaries not clearly defined"
+      - type: file_exists
+        path: ethics/use-case-review.md
+        message: "Missing use-case ethical review process"
+
+signals:
+  green:
+    - "All platform ToS requirements met"
+    - "All claims validated with evidence"
+    - "Ethical boundaries clearly defined and followed"
+  yellow:
+    - "Some ToS areas need review"
+    - "Some claims need better evidence"
+    - "Ethical guidelines need clarification"
+  red:
+    - "Potential ToS violations detected"
+    - "Unsubstantiated claims in public materials"
+    - "No ethical oversight in place"

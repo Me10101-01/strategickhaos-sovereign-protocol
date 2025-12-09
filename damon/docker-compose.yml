@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # STRATEGY DAMON - Monitors for vision drift, no client offer, over-scope
+  damon-strategy:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-strategy
+    volumes:
+      - ..:/project:ro
+    command: python /app/damon-agent.py /app/configs/strategy.yml --project-root /project
+    environment:
+      - DAMON_NAME=STRATEGY
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+
+  # EXECUTION DAMON - Monitors for burnout, context switching, stalled certs
+  damon-execution:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-execution
+    volumes:
+      - ..:/project:ro
+    command: python /app/damon-agent.py /app/configs/execution.yml --project-root /project
+    environment:
+      - DAMON_NAME=EXECUTION
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+
+  # SECURITY DAMON - Monitors for weak methodology, no repeatable harness
+  damon-security:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-security
+    volumes:
+      - ..:/project:ro
+    command: python /app/damon-agent.py /app/configs/security.yml --project-root /project
+    environment:
+      - DAMON_NAME=SECURITY
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+    
+  # CLOUD DAMON - Monitors for IAM mistakes, cost runaway, misconfig
+  damon-cloud:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-cloud
+    volumes:
+      - ..:/project:ro
+    command: python /app/damon-agent.py /app/configs/cloud.yml --project-root /project
+    environment:
+      - DAMON_NAME=CLOUD
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+
+  # DATA DAMON - Monitors for bad metrics, no logs, benchmark fraud
+  damon-data:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-data
+    volumes:
+      - ..:/project:ro
+    command: python /app/damon-agent.py /app/configs/data.yml --project-root /project
+    environment:
+      - DAMON_NAME=DATA
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+
+  # STORY DAMON - Monitors for portfolio chaos, buzzword overload
+  damon-story:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-story
+    volumes:
+      - ..:/project:ro
+    command: python /app/damon-agent.py /app/configs/story.yml --project-root /project
+    environment:
+      - DAMON_NAME=STORY
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+
+  # ETHICS DAMON - Monitors for ToS violations, overclaims, scope creep
+  damon-ethics:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-ethics
+    volumes:
+      - ..:/project:ro
+    command: python /app/damon-agent.py /app/configs/ethics.yml --project-root /project
+    environment:
+      - DAMON_NAME=ETHICS
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+
+  # DAMON Fleet Dashboard - Runs all DAMONs and aggregates results
+  damon-fleet:
+    build:
+      context: ..
+      dockerfile: damon/Dockerfile
+    container_name: damon-fleet
+    volumes:
+      - ..:/project:ro
+      - ./results:/app/results
+    command: python /app/damon-agent.py --all /app/configs --project-root /project --output /app/results/fleet-status.json
+    environment:
+      - DAMON_NAME=FLEET
+      - DAMON_INTERVAL=300
+    restart: unless-stopped
+
+networks:
+  default:
+    name: damon-network
