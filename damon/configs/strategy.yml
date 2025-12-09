@@ -1,0 +1,62 @@
+name: STRATEGY
+description: Monitors for vision drift, missing client offers, and scope creep
+domain: strategic_alignment
+priority: critical
+
+risks:
+  - id: STRAT-001
+    name: Vision Drift
+    description: Project goals diverging from core mission
+    severity: high
+    checks:
+      - type: file_exists
+        path: VISION.md
+        message: "Missing VISION.md - no documented strategic vision"
+      - type: keyword_check
+        files: ["README.md", "VISION.md"]
+        required_keywords: ["mission", "goal", "objective"]
+        message: "Strategic documents missing key alignment terms"
+    
+  - id: STRAT-002
+    name: No Client Offer
+    description: Building without clear client value proposition
+    severity: critical
+    checks:
+      - type: file_exists
+        path: CLIENT_OFFER.md
+        message: "Missing CLIENT_OFFER.md - no documented client value"
+      - type: keyword_check
+        files: ["README.md", "CLIENT_OFFER.md"]
+        required_keywords: ["client", "value", "benefit", "outcome"]
+        message: "No clear client value proposition documented"
+    
+  - id: STRAT-003
+    name: Over-Scope
+    description: Project expanding beyond manageable boundaries
+    severity: high
+    checks:
+      - type: file_count
+        pattern: "*.md"
+        max_count: 20
+        message: "Too many markdown files - possible scope creep"
+      - type: file_exists
+        path: SCOPE.md
+        message: "Missing SCOPE.md - no documented project boundaries"
+      - type: keyword_check
+        files: ["SCOPE.md"]
+        forbidden_keywords: ["everything", "all", "universal", "complete"]
+        message: "Scope document contains unbounded language"
+
+signals:
+  green:
+    - "All strategic documents present and aligned"
+    - "Clear client value proposition documented"
+    - "Project scope clearly defined and bounded"
+  yellow:
+    - "Missing some strategic documentation"
+    - "Client value needs clarification"
+    - "Scope boundaries could be tighter"
+  red:
+    - "No strategic vision documented"
+    - "No clear client offer"
+    - "Unbounded scope detected"

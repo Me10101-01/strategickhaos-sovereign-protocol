@@ -1,0 +1,74 @@
+name: DAMON Fleet Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+# Limit permissions to only what's needed
+permissions:
+  contents: read
+
+jobs:
+  damon-fleet:
+    runs-on: ubuntu-latest
+    name: Run DAMON Fleet Checks
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+          
+      - name: Run DAMON Fleet
+        id: damon
+        run: |
+          python damon/damon-agent.py --all damon/configs --project-root . --output damon-results.json
+          
+      - name: Upload DAMON Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: damon-results
+          path: damon-results.json
+          retention-days: 30
+          
+      - name: Check for Critical Failures
+        run: |
+          python damon/check_critical.py damon-results.json
+
+  damon-security:
+    runs-on: ubuntu-latest
+    name: Security Domain Check
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install pyyaml
+          
+      - name: Run Security DAMON
+        run: |
+          python damon/damon-agent.py damon/configs/security.yml --project-root .

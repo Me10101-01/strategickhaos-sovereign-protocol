@@ -11,3 +11,18 @@
 
 pkg/
 src/
+
+# DAMON results
+damon/results/
+*.damon.json
+damon-results.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/

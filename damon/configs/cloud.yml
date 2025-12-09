@@ -1,0 +1,71 @@
+name: CLOUD
+description: Monitors for GCP IAM mistakes, cost runaway, and misconfigurations
+domain: cloud_operations
+priority: high
+
+risks:
+  - id: CLOUD-001
+    name: IAM Mistakes
+    description: Identity and Access Management misconfigurations
+    severity: critical
+    checks:
+      - type: file_exists
+        path: gcp/IAM_POLICY.md
+        message: "Missing IAM_POLICY.md - no IAM governance documented"
+      - type: keyword_check
+        files: ["gcp/IAM_POLICY.md"]
+        required_keywords: ["least-privilege", "role", "permission", "audit"]
+        message: "IAM policy missing security best practices"
+      - type: file_pattern_check
+        pattern: "**/*.tf"
+        forbidden_patterns: ["roles/owner", "roles/editor", "\"*\""]
+        message: "Terraform files contain overly permissive IAM roles"
+    
+  - id: CLOUD-002
+    name: Cost Runaway
+    description: Cloud costs exceeding budget or growing uncontrolled
+    severity: high
+    checks:
+      - type: file_exists
+        path: gcp/BUDGET.md
+        message: "Missing BUDGET.md - no cost controls documented"
+      - type: file_exists
+        path: gcp/cost-alerts.yml
+        message: "Missing cost-alerts.yml - no automated cost monitoring"
+      - type: keyword_check
+        files: ["gcp/BUDGET.md"]
+        required_keywords: ["limit", "alert", "threshold", "shutdown"]
+        message: "Budget document missing cost control mechanisms"
+    
+  - id: CLOUD-003
+    name: Misconfigurations
+    description: Infrastructure configured insecurely or incorrectly
+    severity: critical
+    checks:
+      - type: file_exists
+        path: gcp/terraform/main.tf
+        message: "Missing Terraform configuration - no IaC"
+      - type: keyword_check
+        files: ["gcp/terraform/*.tf"]
+        forbidden_keywords: ["0.0.0.0/0", "public", "allow_all"]
+        message: "Terraform contains insecure network configurations"
+      - type: file_exists
+        path: gcp/SECURITY_BASELINE.md
+        message: "Missing SECURITY_BASELINE.md - no security standards"
+      - type: file_exists
+        path: gcp/terraform/.terraform-version
+        message: "Missing Terraform version pinning"
+
+signals:
+  green:
+    - "IAM follows least-privilege principle"
+    - "Cost controls and alerts configured"
+    - "Infrastructure secured with best practices"
+  yellow:
+    - "Some IAM roles need tightening"
+    - "Budget tracking needs improvement"
+    - "Minor security configurations to address"
+  red:
+    - "Overly permissive IAM detected"
+    - "No cost controls in place"
+    - "Critical security misconfigurations found"
