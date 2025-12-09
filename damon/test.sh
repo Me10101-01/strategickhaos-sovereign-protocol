@@ -28,7 +28,7 @@ if [ -f /tmp/test-results.json ]; then
     echo "✅ PASS: JSON is valid"
     
     # Check structure
-    DAMON_COUNT=$(python -c "import json; f=open('/tmp/test-results.json'); print(len(json.load(f)))")
+    DAMON_COUNT=$(python -c "import json; print(len(json.load(open('/tmp/test-results.json'))))")
     if [ "$DAMON_COUNT" -eq 7 ]; then
         echo "✅ PASS: All 7 DAMONs in results"
     else
@@ -44,8 +44,8 @@ fi
 echo ""
 echo "Test 4: Individual DAMON execution"
 for config in damon/configs/*.yml; do
-    damon_name=$(basename $config .yml)
-    python damon/damon-agent.py $config --project-root . > /dev/null 2>&1
+    damon_name=$(basename "$config" .yml)
+    python damon/damon-agent.py "$config" --project-root . > /dev/null 2>&1
     echo "✅ PASS: $damon_name DAMON"
 done
 
@@ -90,9 +90,9 @@ echo ""
 echo "Test 7: YAML syntax validation"
 for config in damon/configs/*.yml; do
     if python -c "import yaml; yaml.safe_load(open('$config'))" 2>&1; then
-        echo "✅ PASS: $(basename $config) is valid YAML"
+        echo "✅ PASS: $(basename "$config") is valid YAML"
     else
-        echo "❌ FAIL: $(basename $config) has invalid YAML"
+        echo "❌ FAIL: $(basename "$config") has invalid YAML"
         exit 1
     fi
 done
@@ -100,8 +100,7 @@ done
 # Test 8: Verify Python syntax
 echo ""
 echo "Test 8: Python syntax validation"
-python -m py_compile damon/damon-agent.py 2>&1
-if [ $? -eq 0 ]; then
+if python -m py_compile damon/damon-agent.py 2>&1; then
     echo "✅ PASS: damon-agent.py has valid Python syntax"
 else
     echo "❌ FAIL: damon-agent.py has syntax errors"
